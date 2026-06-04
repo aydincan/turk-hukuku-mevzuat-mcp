@@ -42,6 +42,20 @@ def kanun_metni_getir(kanun: str) -> dict:
 
 
 @mcp.tool()
+def mevzuat_ara(ifade: str, nerede: str = "Baslik", adet: int = 10) -> dict:
+    """mevzuat.gov.tr'de KANUN arar; eşleşen kanunları ve kimliklerini döndürür.
+
+    Kanunun numarasını bilmiyorsan önce bunu çağır: dönen her sonucun `mevzuat_id`
+    değeri doğrudan `madde_getir`/`kanun_metni_getir`'e verilebilir.
+
+    nerede: "Baslik" (kanun adında ara — kanunu bulmak için), "Icerik" (tam metinde
+    ara — bir kavramın hangi kanunlarda geçtiğini taramak için) ya da "Tumu".
+    adet: en çok kaç sonuç (1-50).
+    """
+    return mevzuat.ara(ifade, nerede=nerede, adet=adet)
+
+
+@mcp.tool()
 def bilinen_kanunlar() -> list[dict]:
     """Kayıtlı kanunları (kısaltma, no, ad, mevzuat_id) listeler.
 

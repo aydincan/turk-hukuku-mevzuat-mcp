@@ -17,12 +17,18 @@ sunucu maddenin yürürlükteki metnini ve doğrulama bağlantısını döndür�
 
 | Tool | İşlev |
 |------|-------|
+| `mevzuat_ara(ifade, nerede, adet)` | Kanun arar; eşleşenleri ve `mevzuat_id`'lerini döndürür |
 | `madde_getir(kanun, madde_no)` | Bir kanunun belirli maddesinin resmî güncel metni + doğrulama kaynağı |
 | `kanun_metni_getir(kanun)` | Bir kanunun resmî güncel **tam** metni |
 | `bilinen_kanunlar()` | Kayıtlı kanunların dizini (kısaltma, no, ad, kimlik) |
 
 `kanun` parametresi esnektir: kısaltma (`TBK`), numara (`6098`) veya tam kimlik (`1.5.6098`).
 Kayıtta olmayan kanunlar da numara/kimlikle çağrılabilir.
+
+`mevzuat_ara`'da `nerede` üç değer alır: **`Baslik`** (kanun adında ara — kanunu
+bulmak için), **`Icerik`** (tam metinde ara — bir kavramın hangi kanunlarda geçtiğini
+taramak için), **`Tumu`**. Dönen `mevzuat_id` doğrudan `madde_getir`'e verilebilir —
+böylece numarasını bilmediğin kanunlara da erişebilirsin.
 
 ## Nasıl çalışır
 
@@ -35,6 +41,10 @@ https://www.mevzuat.gov.tr/MevzuatMetin/<Tür>.<Tertip>.<No>.pdf
 Büyük kanunların tamamı `1.5.<No>` (Tür=1 Kanun, Tertip=5) desenindedir — ör. TBK için
 `1.5.6098`. Sunucu bu PDF'i çeker, metne dönüştürür (`pypdf`), istenen maddeyi regex ile
 ayıklar ve süreç boyunca önbellekte tutar. Tamamen yereldir; hiçbir veri toplanmaz.
+
+Arama, sitenin `anasayfa/MevzuatDatatable` uç noktasına gider (aranan ifade UTF-8 Base64
+ile kodlanır). Her sonuç `tur.tertip.no` taşıdığından, eşleşen kanunun PDF kimliği
+(dolayısıyla tam metni ve maddeleri) doğrudan elde edilir.
 
 ## Kurulum
 
@@ -73,9 +83,10 @@ args = ["-m", "turk_hukuku_mevzuat"]
 
 ## Bilinen sınırlar
 
-- **Arama henüz yok.** Şu an kanuna kısaltma/numara/kimlikle erişilir; serbest metin araması
-  (mevzuat.gov.tr DataTable uç noktası) yol haritasındadır.
-- **Yalnızca kanunlar.** Yönetmelik/tebliğ gibi diğer mevzuat türleri ve içtihat kapsam dışıdır.
+- **Yalnızca kanunlar.** Hem arama (`MevzuatTur=1`) hem metin erişimi kanunlarla sınırlıdır;
+  yönetmelik/tebliğ gibi diğer mevzuat türleri ve içtihat kapsam dışıdır.
+- **Arama sıralaması garanti değil.** `mevzuat_ara` ilk sonucu en alakalı yapmayabilir;
+  doğru kanunu `ad`/`no`'ya bakarak seçin.
 - **PDF metnine bağımlı.** Nadiren satır kırılması/birleşme olabilir; kuşkuda kaynağı açın.
 - Mülga/değişik maddelerde araç metni döndüremezse uyarı verir — **madde uydurmaz.**
 
