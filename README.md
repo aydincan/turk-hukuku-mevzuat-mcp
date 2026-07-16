@@ -11,6 +11,8 @@ sunucu maddenin yürürlükteki metnini ve doğrulama bağlantısını döndür�
 > yorum, içtihat değerlendirmesi ya da somut olaya uygulama içermez. Nihai metni daima
 > [mevzuat.gov.tr](https://www.mevzuat.gov.tr) üzerinden teyit edin.
 
+Ayrıntı: [`SORUMLULUK-REDDI.md`](./SORUMLULUK-REDDI.md) · [`PRIVACY.md`](./PRIVACY.md) (veri toplama yok, telemetri yok; tek dış bağlantı mevzuat.gov.tr).
+
 ---
 
 ## Ne yapar
