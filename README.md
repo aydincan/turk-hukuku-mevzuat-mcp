@@ -107,3 +107,5 @@ kamuya açık resmî metne erişimi kolaylaştıran bağımsız bir istemcidir.
 
 *Bu çalışma, ömrünü Türk yargısına adamış babam Hâkim Vahit Polatkan'ın ebedi anısına
 ithaf edilmiştir.*
+
+<!-- mcp-name: io.github.aydincan/turk-hukuku-mevzuat-mcp -->

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.aydincan/turk-hukuku-mevzuat-mcp",
+  "title": "Türk Hukuku Mevzuat",
+  "description": "Türk mevzuatının resmî güncel metnini (mevzuat.gov.tr) yapay zekâ araçlarına açan MCP sunucusu. Turkish legislation, live from the official source.",
+  "websiteUrl": "https://turk-hukuku.com/mcp/",
+  "repository": {
+    "url": "https://github.com/aydincan/turk-hukuku-mevzuat-mcp",
+    "source": "github"
+  },
+  "version": "0.1.1",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "registryBaseUrl": "https://pypi.org",
+      "identifier": "turk-hukuku-mevzuat-mcp",
+      "version": "0.1.1",
+      "runtimeHint": "uvx",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}
