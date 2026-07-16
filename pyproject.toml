@@ -1,6 +1,6 @@
 [project]
 name = "turk-hukuku-mevzuat-mcp"
-version = "0.1.0"
+version = "0.1.1"
 description = "Türk mevzuatının resmî güncel metnini (mevzuat.gov.tr) yapay zekâ araçlarına açan MCP sunucusu."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -17,7 +17,9 @@ dependencies = [
 turk-hukuku-mevzuat = "turk_hukuku_mevzuat.server:main"
 
 [project.urls]
-Homepage = "https://github.com/aydincan/turk-hukuku-mevzuat-mcp"
+Homepage = "https://turk-hukuku.com"
+Documentation = "https://turk-hukuku.com/mcp/"
+Repository = "https://github.com/aydincan/turk-hukuku-mevzuat-mcp"
 Issues = "https://github.com/aydincan/turk-hukuku-mevzuat-mcp/issues"
 
 [build-system]
