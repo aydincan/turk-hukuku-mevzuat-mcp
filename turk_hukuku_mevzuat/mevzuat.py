@@ -20,6 +20,9 @@ _UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
 _BASE = "https://www.mevzuat.gov.tr/MevzuatMetin"
 _ARAMA = "https://www.mevzuat.gov.tr/anasayfa/MevzuatDatatable"
 
+# bağlantı 10 sn, okuma/yazma 30 sn: asılı kalan istek sunucuyu uzun süre meşgul etmesin
+_TIMEOUT = httpx.Timeout(30.0, connect=10.0)
+
 # basit süreç-içi önbellek: mevzuat_id -> tam metin
 _CACHE: dict[str, str] = {}
 
@@ -40,7 +43,7 @@ def tam_metin(kanun: str) -> dict:
     mevzuat_id, ad, _ = registry.cozumle(kanun)
     kaynak = f"{_BASE}/{mevzuat_id}.pdf"
     if mevzuat_id not in _CACHE:
-        r = httpx.get(kaynak, headers={"User-Agent": _UA}, timeout=60,
+        r = httpx.get(kaynak, headers={"User-Agent": _UA}, timeout=_TIMEOUT,
                       follow_redirects=True)
         if r.status_code != 200 or "pdf" not in r.headers.get("content-type", ""):
             raise LookupError(
@@ -113,7 +116,7 @@ def ara(ifade: str, nerede: str = "Baslik", adet: int = 10) -> dict:
         "parameters": {"AranacakIfade": b64, "AranacakYer": nerede,
                        "TamCumle": False, "MevzuatTur": 1, "GenelArama": True},
     }
-    r = httpx.post(_ARAMA, json=govde, timeout=60, headers={
+    r = httpx.post(_ARAMA, json=govde, timeout=_TIMEOUT, headers={
         "User-Agent": _UA, "X-Requested-With": "XMLHttpRequest",
         "Referer": "https://www.mevzuat.gov.tr/aramasonuc"})
     r.raise_for_status()

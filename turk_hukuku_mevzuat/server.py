@@ -9,6 +9,9 @@ Taşıma:      stdio (Claude Code / Codex / Gemini CLI ile uyumlu)
 """
 from __future__ import annotations
 
+from functools import partial
+
+import anyio
 from mcp.server.fastmcp import FastMCP
 
 from . import mevzuat, registry
@@ -16,8 +19,10 @@ from . import mevzuat, registry
 mcp = FastMCP("turk-hukuku-mevzuat")
 
 
+# FastMCP senkron araçları event loop üzerinde çalıştırır; bloklayan HTTP
+# çağrısı tüm sunucuyu kilitler, bu yüzden işi worker thread'e taşıyoruz.
 @mcp.tool()
-def madde_getir(kanun: str, madde_no: int) -> dict:
+async def madde_getir(kanun: str, madde_no: int) -> dict:
     """Bir kanunun belirli maddesinin RESMÎ güncel metnini getirir.
 
     Atıf yapmadan önce bunu çağır: dönen `metin` mevzuat.gov.tr'nin yürürlükteki
@@ -26,11 +31,11 @@ def madde_getir(kanun: str, madde_no: int) -> dict:
 
     kanun: kısaltma ("TBK"), numara ("6098") veya tam kimlik ("1.5.6098").
     """
-    return mevzuat.madde(kanun, madde_no)
+    return await anyio.to_thread.run_sync(partial(mevzuat.madde, kanun, madde_no))
 
 
 @mcp.tool()
-def kanun_metni_getir(kanun: str) -> dict:
+async def kanun_metni_getir(kanun: str) -> dict:
     """Bir kanunun RESMÎ güncel tam metnini getirir (mevzuat.gov.tr).
 
     Büyük kanunlar uzundur; tek madde gerekiyorsa `madde_getir` tercih edilmeli.
@@ -38,11 +43,11 @@ def kanun_metni_getir(kanun: str) -> dict:
 
     kanun: kısaltma ("TMK"), numara ("4721") veya tam kimlik ("1.5.4721").
     """
-    return mevzuat.tam_metin(kanun)
+    return await anyio.to_thread.run_sync(partial(mevzuat.tam_metin, kanun))
 
 
 @mcp.tool()
-def mevzuat_ara(ifade: str, nerede: str = "Baslik", adet: int = 10) -> dict:
+async def mevzuat_ara(ifade: str, nerede: str = "Baslik", adet: int = 10) -> dict:
     """mevzuat.gov.tr'de KANUN arar; eşleşen kanunları ve kimliklerini döndürür.
 
     Kanunun numarasını bilmiyorsan önce bunu çağır: dönen her sonucun `mevzuat_id`
@@ -52,7 +57,9 @@ def mevzuat_ara(ifade: str, nerede: str = "Baslik", adet: int = 10) -> dict:
     ara — bir kavramın hangi kanunlarda geçtiğini taramak için) ya da "Tumu".
     adet: en çok kaç sonuç (1-50).
     """
-    return mevzuat.ara(ifade, nerede=nerede, adet=adet)
+    return await anyio.to_thread.run_sync(
+        partial(mevzuat.ara, ifade, nerede=nerede, adet=adet)
+    )
 
 
 @mcp.tool()
