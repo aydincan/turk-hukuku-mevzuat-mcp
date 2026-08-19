@@ -1,0 +1,37 @@
+{
+  "name": "turk-hukuku-mevzuat-mcp",
+  "version": "0.1.2",
+  "description": "Türk mevzuatının resmî güncel metnini (mevzuat.gov.tr) yapay zekâ araçlarına açan MCP sunucusu. Python tabanlı sunucuyu uvx ile başlatan npm sarmalayıcısı.",
+  "bin": {
+    "turk-hukuku-mevzuat": "bin.js"
+  },
+  "files": [
+    "bin.js",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "mcpName": "io.github.aydincan/turk-hukuku-mevzuat-mcp",
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "turkish-law",
+    "turk-hukuku",
+    "mevzuat",
+    "hukuk",
+    "legal-tech",
+    "claude"
+  ],
+  "author": "Aydın Can Polatkan",
+  "license": "MIT",
+  "homepage": "https://turk-hukuku.com/mcp/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aydincan/turk-hukuku-mevzuat-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/aydincan/turk-hukuku-mevzuat-mcp/issues"
+  }
+}
