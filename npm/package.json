@@ -1,6 +1,6 @@
 {
   "name": "turk-hukuku-mevzuat-mcp",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Türk mevzuatının resmî güncel metnini (mevzuat.gov.tr) yapay zekâ araçlarına açan MCP sunucusu. Python tabanlı sunucuyu uvx ile başlatan npm sarmalayıcısı.",
   "bin": {
     "turk-hukuku-mevzuat": "bin.js"

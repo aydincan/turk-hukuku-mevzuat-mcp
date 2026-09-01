@@ -9,7 +9,10 @@ from __future__ import annotations
 import base64
 import io
 import re
+import ssl
+from importlib.resources import files
 
+import certifi
 import httpx
 from pypdf import PdfReader
 
@@ -22,6 +25,19 @@ _ARAMA = "https://www.mevzuat.gov.tr/anasayfa/MevzuatDatatable"
 
 # bağlantı 10 sn, okuma/yazma 30 sn: asılı kalan istek sunucuyu uzun süre meşgul etmesin
 _TIMEOUT = httpx.Timeout(30.0, connect=10.0)
+
+
+def _ssl_baglami() -> ssl.SSLContext:
+    """mevzuat.gov.tr, TLS zincirinde ara sertifikayı (GeoTrust TLS RSA CA G1)
+    göndermiyor; tarayıcılar eksik halkayı kendileri indirir, Python indirmez.
+    Doğrulama kapatılmaz: certifi köklerine resmî DigiCert ara sertifikası eklenir."""
+    ctx = ssl.create_default_context(cafile=certifi.where())
+    ctx.load_verify_locations(cadata=files("turk_hukuku_mevzuat").joinpath(
+        "certs/geotrust-tls-rsa-ca-g1.pem").read_text())
+    return ctx
+
+
+_SSL = _ssl_baglami()
 
 # basit süreç-içi önbellek: mevzuat_id -> tam metin
 _CACHE: dict[str, str] = {}
@@ -44,7 +60,7 @@ def tam_metin(kanun: str) -> dict:
     kaynak = f"{_BASE}/{mevzuat_id}.pdf"
     if mevzuat_id not in _CACHE:
         r = httpx.get(kaynak, headers={"User-Agent": _UA}, timeout=_TIMEOUT,
-                      follow_redirects=True)
+                      follow_redirects=True, verify=_SSL)
         if r.status_code != 200 or "pdf" not in r.headers.get("content-type", ""):
             raise LookupError(
                 f"{ad} ({mevzuat_id}) için resmî metin bulunamadı (HTTP {r.status_code}). "
@@ -116,7 +132,7 @@ def ara(ifade: str, nerede: str = "Baslik", adet: int = 10) -> dict:
         "parameters": {"AranacakIfade": b64, "AranacakYer": nerede,
                        "TamCumle": False, "MevzuatTur": 1, "GenelArama": True},
     }
-    r = httpx.post(_ARAMA, json=govde, timeout=_TIMEOUT, headers={
+    r = httpx.post(_ARAMA, json=govde, timeout=_TIMEOUT, verify=_SSL, headers={
         "User-Agent": _UA, "X-Requested-With": "XMLHttpRequest",
         "Referer": "https://www.mevzuat.gov.tr/aramasonuc"})
     r.raise_for_status()
