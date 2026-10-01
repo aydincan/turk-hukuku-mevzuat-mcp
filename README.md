@@ -13,6 +13,8 @@ sunucu maddenin yürürlükteki metnini ve doğrulama bağlantısını döndür�
 
 Ayrıntı: [`SORUMLULUK-REDDI.md`](./SORUMLULUK-REDDI.md) · [`PRIVACY.md`](./PRIVACY.md) (veri toplama yok, telemetri yok; tek dış bağlantı mevzuat.gov.tr).
 
+**Belgeler ve kurulum rehberi:** [turk-hukuku.com/mcp](https://turk-hukuku.com/mcp/) · Terminal kullanmıyorsanız [masaüstü uygulaması](https://turk-hukuku.com/uygulama/) bu sunucuyu kendisi kurup çalıştırır (Mac ve Windows).
+
 ---
 
 ## Ne yapar
