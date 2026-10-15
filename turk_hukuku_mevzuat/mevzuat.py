@@ -3,6 +3,11 @@
 Veri kaynağı: https://www.mevzuat.gov.tr/MevzuatMetin/<id>.pdf (Cumhurbaşkanlığı
 Mevzuat Bilgi Sistemi). Tam metin PDF olarak alınır, metne dönüştürülür ve istenen
 madde regex ile ayıklanır. Çekilen metin süreç boyunca önbellekte tutulur.
+
+Bütün istekler ortak.py kapısından geçer: kendini tanıtan User-Agent (tarayıcı taklidi
+yok), site başına sıra (aynı anda tek istek, aralarında en az 1 sn) ve sert durma (403,
+429, captcha, beklenen PDF ya da JSON yerine HTML: yeniden denenmez). Diğer HTTP ve ağ
+hataları kısa bir Türkçe hata verir.
 """
 from __future__ import annotations
 
@@ -16,10 +21,8 @@ import certifi
 import httpx
 from pypdf import PdfReader
 
-from . import registry
+from . import ortak, registry
 
-_UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-       "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36")
 _BASE = "https://www.mevzuat.gov.tr/MevzuatMetin"
 _ARAMA = "https://www.mevzuat.gov.tr/anasayfa/MevzuatDatatable"
 
@@ -59,14 +62,14 @@ def tam_metin(kanun: str) -> dict:
     mevzuat_id, ad, _ = registry.cozumle(kanun)
     kaynak = f"{_BASE}/{mevzuat_id}.pdf"
     if mevzuat_id not in _CACHE:
-        r = httpx.get(kaynak, headers={"User-Agent": _UA}, timeout=_TIMEOUT,
-                      follow_redirects=True, verify=_SSL)
-        if r.status_code != 200 or "pdf" not in r.headers.get("content-type", ""):
+        veri = ortak.pdf_al(kaynak, timeout=_TIMEOUT, verify=_SSL)
+        if veri is None:
             raise LookupError(
-                f"{ad} ({mevzuat_id}) için resmî metin bulunamadı (HTTP {r.status_code}). "
-                f"Kimlik yanlış olabilir; açık kimlik (ör. 1.5.6098) deneyin."
+                f"{ad} ({mevzuat_id}) için resmî metin bulunamadı (sitede bu kimlikte metin "
+                f"yok). Kimlik yanlış olabilir; mevzuat_ara ile kanunu bulup dönen "
+                f"mevzuat_id'yi deneyin (ör. 1.5.6098)."
             )
-        _CACHE[mevzuat_id] = _pdf_to_text(r.content)
+        _CACHE[mevzuat_id] = _pdf_to_text(veri)
     metin = _CACHE[mevzuat_id]
     return {"kanun": ad, "mevzuat_id": mevzuat_id, "kaynak": kaynak,
             "uzunluk": len(metin), "metin": metin}
@@ -98,7 +101,7 @@ def madde(kanun: str, madde_no: int) -> dict:
         "metin": m,
         "atif": f"{tm['kanun']} m.{madde_no} (kaynak: {tm['kaynak']})",
         "uyari": None if m else (
-            f"m.{madde_no} metinde bulunamadı — numara yanlış olabilir ya da madde "
+            f"m.{madde_no} metinde bulunamadı. Numara yanlış olabilir ya da madde "
             f"mülga/değişik olabilir. Kaynağı elle kontrol edin: {tm['kaynak']}"
         ),
     }
@@ -132,11 +135,7 @@ def ara(ifade: str, nerede: str = "Baslik", adet: int = 10) -> dict:
         "parameters": {"AranacakIfade": b64, "AranacakYer": nerede,
                        "TamCumle": False, "MevzuatTur": 1, "GenelArama": True},
     }
-    r = httpx.post(_ARAMA, json=govde, timeout=_TIMEOUT, verify=_SSL, headers={
-        "User-Agent": _UA, "X-Requested-With": "XMLHttpRequest",
-        "Referer": "https://www.mevzuat.gov.tr/aramasonuc"})
-    r.raise_for_status()
-    veri = r.json()
+    veri = ortak.json_al("POST", _ARAMA, json=govde, timeout=_TIMEOUT, verify=_SSL)
     sonuclar = []
     for x in veri.get("data", []) or []:
         no = str(x.get("mevzuatNo", "")).strip()

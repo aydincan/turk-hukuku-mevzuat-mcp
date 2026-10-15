@@ -27,7 +27,7 @@ async def madde_getir(kanun: str, madde_no: int) -> dict:
 
     Atıf yapmadan önce bunu çağır: dönen `metin` mevzuat.gov.tr'nin yürürlükteki
     konsolide metnidir; `kaynak` doğrulama URL'sidir. `metin` None ise madde
-    bulunamamıştır (numara yanlış ya da mülga) — uydurma, `uyari`yı aktar.
+    bulunamamıştır (numara yanlış ya da mülga); uydurma, `uyari`yı aktar.
 
     kanun: kısaltma ("TBK"), numara ("6098") veya tam kimlik ("1.5.6098").
     """
@@ -53,8 +53,8 @@ async def mevzuat_ara(ifade: str, nerede: str = "Baslik", adet: int = 10) -> dic
     Kanunun numarasını bilmiyorsan önce bunu çağır: dönen her sonucun `mevzuat_id`
     değeri doğrudan `madde_getir`/`kanun_metni_getir`'e verilebilir.
 
-    nerede: "Baslik" (kanun adında ara — kanunu bulmak için), "Icerik" (tam metinde
-    ara — bir kavramın hangi kanunlarda geçtiğini taramak için) ya da "Tumu".
+    nerede: "Baslik" (kanun adında ara: kanunu bulmak için), "Icerik" (tam metinde
+    ara: bir kavramın hangi kanunlarda geçtiğini taramak için) ya da "Tumu".
     adet: en çok kaç sonuç (1-50).
     """
     return await anyio.to_thread.run_sync(

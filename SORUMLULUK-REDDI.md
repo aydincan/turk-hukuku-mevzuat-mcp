@@ -8,7 +8,7 @@
 ## 1. Hukuki danışmanlık değildir
 
 Bu sunucunun döndürdüğü hiçbir metin **avukatlık hizmeti, hukuki görüş veya danışmanlık
-oluşturmaz** ve avukat–müvekkil ilişkisi doğurmaz. Somut bir hukuki sorununuz varsa
+oluşturmaz** ve avukat-müvekkil ilişkisi doğurmaz. Somut bir hukuki sorununuz varsa
 yetkili bir avukata danışın. Çıktıların hukuki sorumluluğu, onları kullanan **yetkili
 hukukçuya** aittir.
 

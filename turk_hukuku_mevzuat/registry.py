@@ -2,10 +2,11 @@
 
 mevzuat.gov.tr tam metni şu desende sunar:
     https://www.mevzuat.gov.tr/MevzuatMetin/<Tür>.<Tertip>.<No>.pdf
-Test edilen büyük kanunların tamamı **Tür=1 (Kanun), Tertip=5** desenindedir
-(eski tarihli olanlar dahil). Bu yüzden bilinmeyen bir kanun numarası için de
-varsayılan olarak `1.5.<No>` denenir; gerekirse açık kimlik (ör. "1.5.6098")
-doğrudan verilebilir.
+Test edilen büyük kanunların çoğu **Tür=1 (Kanun), Tertip=5** desenindedir. Bu yüzden
+bilinmeyen bir kanun numarası için de varsayılan olarak `1.5.<No>` denenir; gerekirse açık
+kimlik (ör. "1.5.6098") doğrudan verilebilir. Başka tertipte yayımlanan kanunlar `OZEL_ID`
+ile eşlenir (ör. FSEK 1.3.5846, İİK 1.3.2004, VUK 1.4.213, GVK 1.4.193); bunların 1.5.<No>
+adresi sitenin 404 sayfasına yönlenir.
 """
 from __future__ import annotations
 
@@ -50,6 +51,21 @@ KANUNLAR: dict[str, tuple[int, str]] = {
     "GÜMRÜK": (4458, "Gümrük Kanunu"),
 }
 
+# Tertip 5 dışında yayımlanan kanunlar: kanun no -> mevzuat.gov.tr kimliği. Hepsi Ekim
+# 2026'da sitenin arama sonucundan (mevzuatTertip) alındı ve madde çekilerek doğrulandı;
+# 1.5.<No> adresleri sitenin 404 sayfasına yönleniyor.
+OZEL_ID: dict[int, str] = {
+    5846: "1.3.5846",   # FSEK (1951)
+    2004: "1.3.2004",   # İİK (1932)
+    213: "1.4.213",     # VUK (1961)
+    193: "1.4.193",     # GVK (1960)
+}
+
+
+def _kimlik(no: int) -> str:
+    return OZEL_ID.get(no, f"1.5.{no}")
+
+
 # Kısaltma alias'ları (kullanıcı farklı yazabilir) -> kanonik anahtar
 ALIAS: dict[str, str] = {
     "MEDENİ": "TMK", "MEDENI": "TMK", "TURK MEDENI KANUNU": "TMK",
@@ -87,14 +103,14 @@ def cozumle(kanun: str) -> tuple[str, str, int | None]:
     if s.isdigit():
         no = int(s)
         ad = next((a for _, (n, a) in KANUNLAR.items() if n == no), f"Kanun No {no}")
-        return f"1.5.{no}", ad, no
+        return _kimlik(no), ad, no
 
     # 3) Kısaltma / ad
     key = _norm(s)
     key = ALIAS.get(key, key)
     if key in KANUNLAR:
         no, ad = KANUNLAR[key]
-        return f"1.5.{no}", ad, no
+        return _kimlik(no), ad, no
 
     # 4) Bilinmeyen ad -> hata için None
     raise ValueError(
@@ -105,6 +121,6 @@ def cozumle(kanun: str) -> tuple[str, str, int | None]:
 
 def liste() -> list[dict]:
     return [
-        {"kisaltma": k, "no": no, "ad": ad, "mevzuat_id": f"1.5.{no}"}
+        {"kisaltma": k, "no": no, "ad": ad, "mevzuat_id": _kimlik(no)}
         for k, (no, ad) in sorted(KANUNLAR.items())
     ]

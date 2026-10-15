@@ -1,6 +1,6 @@
 [project]
 name = "turk-hukuku-mevzuat-mcp"
-version = "0.1.3"
+version = "0.1.4"
 description = "Türk mevzuatının resmî güncel metnini (mevzuat.gov.tr) yapay zekâ araçlarına açan MCP sunucusu."
 readme = "README.md"
 requires-python = ">=3.10"

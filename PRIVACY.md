@@ -1,4 +1,4 @@
-# Gizlilik Politikası — Privacy Policy
+# Gizlilik Politikası / Privacy Policy
 
 `turk-hukuku-mevzuat-mcp`, Türk mevzuatının resmî güncel metnini yapay zekâ araçlarına
 açan bir **MCP sunucusudur.** Tamamen **sizin makinenizde / oturumunuzda** çalışır.
@@ -8,18 +8,34 @@ açan bir **MCP sunucusudur.** Tamamen **sizin makinenizde / oturumunuzda** çal
 - Sunucu **hiçbir kişisel veri toplamaz, saklamaz veya proje sahibine göndermez.**
 - **Telemetri, analitik, izleme yoktur.** Kaynak kodda loglama, veritabanı veya disk
   önbelleği bulunmaz; sorgular ve sonuçlar **kalıcı olarak saklanmaz.**
+- Çekilen kanun metinleri yalnızca oturum boyunca bellekte tutulur, aynı kanun yeniden
+  istenince siteye tekrar gidilmez; sunucu kapanınca silinir.
 - Proje sahibi sizin sorgularınıza **erişemez.**
 
 ## Dışarıya giden tek bağlantı
 
 Sunucu yalnızca tek bir resmî, kamuya açık kaynağa bağlanır:
 
-- **`https://www.mevzuat.gov.tr`** — Cumhurbaşkanlığı Mevzuat Bilgi Sistemi (kanunun
+- **`https://www.mevzuat.gov.tr`**: Cumhurbaşkanlığı Mevzuat Bilgi Sistemi (kanunun
   resmî güncel metnini PDF olarak çekmek için).
 
 Yani çağrılarınız (örn. "TBK m.49") yalnızca bu resmî siteye iletilir; başka hiçbir
 üçüncü tarafa gitmez. Bu siteye yapılan istek, mevzuat.gov.tr'nin kendi gizlilik ve
 erişim koşullarına tabidir.
+
+## Resmî siteye karşı tutum
+
+- Sunucu bu siteye kendi adıyla bağlanır: her istekte User-Agent olarak
+  `turk-hukuku-mevzuat-mcp/<sürüm> (+https://turk-hukuku.com/mcp/)` gönderir; tarayıcı
+  taklidi yapmaz.
+- İstekler sıraya konur: siteye aynı anda tek istek gider, iki istek arasında en az bir
+  saniye beklenir.
+- Captcha çözülmez ve atlanmaz. Site doğrulama isterse, erişimi reddederse (HTTP 403),
+  erişim sınırı bildirirse (HTTP 429) ya da metin yerine site dışına veya bir hata
+  sayfasına yönlendirirse sunucu durur, isteği yinelemez, siteye bir süre istek göndermez
+  ve sizi resmî siteye yönlendirir.
+- Diğer hatalarda (sunucu hatası, ağ hatası) kısa bir Türkçe ileti verilir; istek
+  yinelenmez. Bulunamayan bir kanun "bulunamadı" olarak bildirilir.
 
 ## Müvekkil ve kişisel veri uyarısı
 
